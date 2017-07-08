@@ -1,47 +1,48 @@
 import datetime as dt
 import requests
 import re
-import time
 import csv
-# search with regular expressions
 
-# "CrumbStore":\{"crumb":"(?<crumb>[^"]+)"\}
+class Fetcher:
+    def __init__(self, ticker, start, *args):
+        self.ticker = ticker.upper()
+        self.cookie, self.crumb = self.init()
 
-url = 'https://finance.yahoo.com/quote/AAPL/history' # url for a ticker symbol, with a download link
-r = requests.get(url)  # download page
+        self.start = int(dt.datetime(start[0],start[1],start[2]).timestamp())
 
-txt = r.text # extract html
+        if args:
+            end = args[0]
+            self.end = int(dt.datetime(end[0],end[1],end[2]).timestamp())
+        else:
+            self.end = str(int(dt.datetime.now()))
 
+    def init(self):
+        """Returns a tuple pair of cookie and crumb used in the request"""
+        url = 'https://finance.yahoo.com/quote/%s/history' % (self.ticker)
+        r = requests.get(url)
+        txt = r.text
+        cookie = r.cookies['B']
+        pattern = re.compile('.*"CrumbStore":\{"crumb":"(?P<crumb>[^"]+)"\}')
 
-cookie = r.cookies['B'] # the cooke we're looking for is named 'B'
-print('Cookie: ', cookie)
+        for line in txt.splitlines():
+            m = pattern.match(line)
+            if m is not None:
+                crumb = m.groupdict()['crumb']
+        return cookie, crumb  # return a tuple of crumb and cookie
 
-# Now we need to extract the token from html.
-# the string we need looks like this: "CrumbStore":{"crumb":"lQHxbbYOBCq"}
-# regular expressions will do the trick!
+    def getHistorical(self):
+        """Returns a list of historical data from Yahoo Finance"""
+        url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=1d&events=history&crumb=%s" % (self.ticker, self.start, self.end, self.crumb)
+        data = requests.get(url, cookies={'B':self.cookie})
+        content = data.content.decode("utf-8")
+        csv_content = csv.reader(content.splitlines(), delimiter=',')
+        return list(csv_content)
 
-pattern = re.compile('.*"CrumbStore":\{"crumb":"(?P<crumb>[^"]+)"\}')
+"""
+Creates a list of all the data with the following format for each row
+['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
+"""
+data = Fetcher("AAPL", [2007,1,1], [2017,1,1]).getHistorical()
 
-for line in txt.splitlines():
-    m = pattern.match(line)
-    if m is not None:
-        crumb = m.groupdict()['crumb']
-
-
-print('Crumb=',crumb)
-start = str(int(dt.datetime(2007,1,1).timestamp()))
-end = str(int(time.time()))
-ticker = "GEVO"
-ticker = ticker.upper()
-
-#or int(time.time()) for current timestamp
-url = "https://query1.finance.yahoo.com/v7/finance/download/" + ticker + "?period1=" + start + "&period2=" + end + "&interval=1d&events=history&crumb=" + crumb
-data = requests.get(url, cookies={'B':cookie})
-content = data.content.decode("utf-8")
-csv_content = csv.reader(content.splitlines(), delimiter=',')
-
-
-#['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
-for row in list(csv_content):
-    if len(row) == 7:  # only get correctly formatted rows
-        print(row)
+for row in data:
+    print(row)
