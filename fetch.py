@@ -1,4 +1,5 @@
 import datetime as dt
+import pandas as pd
 import requests
 import re
 import csv
@@ -20,12 +21,12 @@ class Fetcher:
         """Returns a tuple pair of cookie and crumb used in the request"""
         url = 'https://finance.yahoo.com/quote/%s/history' % (self.ticker)
         r = requests.get(url)
-        txt = r.text
+        txt = r.content
         cookie = r.cookies['B']
         pattern = re.compile('.*"CrumbStore":\{"crumb":"(?P<crumb>[^"]+)"\}')
 
         for line in txt.splitlines():
-            m = pattern.match(line)
+            m = pattern.match(line.decode("utf-8"))
             if m is not None:
                 crumb = m.groupdict()['crumb']
         return cookie, crumb  # return a tuple of crumb and cookie
@@ -43,6 +44,5 @@ Creates a list of all the data with the following format for each row
 ['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
 """
 data = Fetcher("AAPL", [2007,1,1], [2017,1,1]).getHistorical()
-
 for row in data:
     print(row)
