@@ -37,12 +37,22 @@ class Fetcher:
         data = requests.get(url, cookies={'B':self.cookie})
         content = data.content.decode("utf-8")
         csv_content = csv.reader(content.splitlines(), delimiter=',')
-        return list(csv_content)
+        return pd.DataFrame(list(csv_content))
+
+    def getDatePrice(self):
+        """Returns a DataFrame for Date and Price from getHistorical()"""
+        return self.getHistorical().ix[0:,5]
+
+    def getDateVolume(self):
+        """Returns a DataFrame for Date and Volume from getHistorical()"""
+        return self.getHistorical().ix[0:,6]
 
 """
-Creates a list of all the data with the following format for each row
+Creates a Pandas DataFrame object storing all data
 ['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
 """
-data = Fetcher("AAPL", [2007,1,1], [2017,1,1]).getHistorical()
-for row in data:
-    print(row)
+fetch = Fetcher("AAPL", [2007,1,1], [2017,1,1])
+
+print(fetch.getHistorical())
+print(fetch.getDatePrice())
+print(fetch.getDateVolume())
