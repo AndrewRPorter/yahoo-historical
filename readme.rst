@@ -2,6 +2,12 @@
 yahoo-historical
 ================
 
+Installation
+
+.. code::
+
+    python -m pip install yahoo-historical
+
 Usage
 -----
 
@@ -18,6 +24,7 @@ Example output:
 
 .. code::
 
+    >>>from yahoo_historical import Fetcher
     >>>data = Fetcher("AAPL", [2007,1,1], [2017,1,1]).getHistorical()
     >>>for row in data:
     >>>    print(row)

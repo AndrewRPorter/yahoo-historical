@@ -1,1 +1,1 @@
-from fetch import Fetch
+from yahoo_historical.fetch import Fetcher
