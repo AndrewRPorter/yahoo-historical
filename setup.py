@@ -7,9 +7,9 @@ except:
     _license = ''
 
 setup(
-  name='yahoo-historical',
+  name='yahoo_historical',
   packages=['yahoo_historical'],
-  version='0.0.1',
+  version='0.0.3',
   description='Fetches historical EOD (end of day) prices from yahoo finance',
   author='Andrew Porter',
   author_email='porter.r.andrew@gmail.com',
