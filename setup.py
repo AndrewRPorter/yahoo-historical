@@ -15,6 +15,6 @@ setup(
   author_email='porter.r.andrew@gmail.com',
   license=_license,
   url='https://github.com/AndrewRPorter/yahoo-historical',
-  download_url='',
+  download_url='https://github.com/AndrewRPorter/yahoo-historical/releases',
   install_requires=['setuptools', 'pandas', 'requests'],
  )
