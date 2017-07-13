@@ -3,19 +3,20 @@ import pandas as pd
 import requests
 import re
 import csv
+import time
 
 class Fetcher:
     def __init__(self, ticker, start, *args):
         self.ticker = ticker.upper()
         self.cookie, self.crumb = self.init()
 
-        self.start = int(dt.datetime(start[0],start[1],start[2]).timestamp())
+        self.start = int(time.mktime(dt.datetime(start[0],start[1],start[2]).timetuple()))
 
         if args:
             end = args[0]
-            self.end = int(dt.datetime(end[0],end[1],end[2]).timestamp())
+            self.end = int(time.mktime(dt.datetime(end[0],end[1],end[2]).timetuple()))
         else:
-            self.end = str(int(dt.datetime.now()))
+            self.end = int(time.time())
 
     def init(self):
         """Returns a tuple pair of cookie and crumb used in the request"""
@@ -46,13 +47,3 @@ class Fetcher:
     def getDateVolume(self):
         """Returns a DataFrame for Date and Volume from getHistorical()"""
         return self.getHistorical().ix[0:,6]
-
-"""
-Creates a Pandas DataFrame object storing all data
-['Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']
-"""
-fetch = Fetcher("AAPL", [2007,1,1], [2017,1,1])
-
-print(fetch.getHistorical())
-print(fetch.getDatePrice())
-print(fetch.getDateVolume())
