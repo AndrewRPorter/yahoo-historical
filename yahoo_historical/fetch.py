@@ -2,11 +2,17 @@ import datetime as dt
 import pandas as pd
 import requests
 import re
-import csv
 import time
+try:
+    from io import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 class Fetcher:
+    api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=1d&events=history&crumb=%s"
+
     def __init__(self, ticker, start, *args):
+        """Initializes class variables and formats api_url string"""
         self.ticker = ticker.upper()
         self.cookie, self.crumb = self.init()
 
@@ -17,6 +23,7 @@ class Fetcher:
             self.end = int(time.mktime(dt.datetime(end[0],end[1],end[2]).timetuple()))
         else:
             self.end = int(time.time())
+        self.url = self.api_url % (self.ticker, self.start, self.end, self.crumb)
 
     def init(self):
         """Returns a tuple pair of cookie and crumb used in the request"""
@@ -34,11 +41,9 @@ class Fetcher:
 
     def getHistorical(self):
         """Returns a list of historical data from Yahoo Finance"""
-        url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=1d&events=history&crumb=%s" % (self.ticker, self.start, self.end, self.crumb)
-        data = requests.get(url, cookies={'B':self.cookie})
-        content = data.content.decode("utf-8")
-        csv_content = csv.reader(content.splitlines(), delimiter=',')
-        return pd.DataFrame(list(csv_content))
+        data = requests.get(self.url, cookies={'B':self.cookie})
+        content = StringIO(data.content.decode("utf-8"))
+        return pd.read_csv(content, sep=',')
 
     def getDatePrice(self):
         """Returns a DataFrame for Date and Price from getHistorical()"""
@@ -47,3 +52,5 @@ class Fetcher:
     def getDateVolume(self):
         """Returns a DataFrame for Date and Volume from getHistorical()"""
         return self.getHistorical().ix[0:,6]
+
+print(Fetcher("AAPL", [2007,1,1]).getHistorical())
