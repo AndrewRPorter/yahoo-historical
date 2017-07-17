@@ -37,6 +37,7 @@ class Fetcher:
             m = pattern.match(line.decode("utf-8"))
             if m is not None:
                 crumb = m.groupdict()['crumb']
+                crumb = crumb.replace(u'\\u002F', '/')
         return cookie, crumb  # return a tuple of crumb and cookie
 
     def getHistorical(self):
