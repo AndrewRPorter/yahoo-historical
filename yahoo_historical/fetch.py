@@ -52,5 +52,3 @@ class Fetcher:
     def getDateVolume(self):
         """Returns a DataFrame for Date and Volume from getHistorical()"""
         return self.getHistorical().ix[0:,6]
-
-print(Fetcher("AAPL", [2007,1,1]).getHistorical())
