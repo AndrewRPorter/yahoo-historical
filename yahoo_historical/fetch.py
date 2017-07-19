@@ -48,8 +48,8 @@ class Fetcher:
 
     def getDatePrice(self):
         """Returns a DataFrame for Date and Price from getHistorical()"""
-        return self.getHistorical().ix[0:,5]
+        return self.getHistorical().ix[:,[0,5]]
 
     def getDateVolume(self):
         """Returns a DataFrame for Date and Volume from getHistorical()"""
-        return self.getHistorical().ix[0:,6]
+        return self.getHistorical().ix[:,[0,6]]
