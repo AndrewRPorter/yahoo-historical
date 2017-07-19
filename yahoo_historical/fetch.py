@@ -10,7 +10,7 @@ except ImportError:
 
 class Fetcher:
     api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=history&crumb=%s"
-    def __init__(self, ticker, start, interval = "1d", *args):
+    def __init__(self, ticker, start, *args, interval = "1d"):
         """Initializes class variables and formats api_url string"""
         self.ticker = ticker.upper()
         self.interval = interval
@@ -23,6 +23,7 @@ class Fetcher:
             self.end = int(time.mktime(dt.datetime(end[0],end[1],end[2]).timetuple()))
         else:
             self.end = int(time.time())
+
         self.url = self.api_url % (self.ticker, self.start, self.end, self.interval, self.crumb)
 
     def init(self):
