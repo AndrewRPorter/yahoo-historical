@@ -9,11 +9,11 @@ except ImportError:
     from StringIO import StringIO
 
 class Fetcher:
-    api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=1d&events=history&crumb=%s"
-
-    def __init__(self, ticker, start, *args):
+    api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=history&crumb=%s"
+    def __init__(self, ticker, start, interval = "1d", *args):
         """Initializes class variables and formats api_url string"""
         self.ticker = ticker.upper()
+        self.interval = interval
         self.cookie, self.crumb = self.init()
 
         self.start = int(time.mktime(dt.datetime(start[0],start[1],start[2]).timetuple()))
@@ -23,7 +23,7 @@ class Fetcher:
             self.end = int(time.mktime(dt.datetime(end[0],end[1],end[2]).timetuple()))
         else:
             self.end = int(time.time())
-        self.url = self.api_url % (self.ticker, self.start, self.end, self.crumb)
+        self.url = self.api_url % (self.ticker, self.start, self.end, self.interval, self.crumb)
 
     def init(self):
         """Returns a tuple pair of cookie and crumb used in the request"""
@@ -42,6 +42,9 @@ class Fetcher:
 
     def getHistorical(self):
         """Returns a list of historical data from Yahoo Finance"""
+        if self.interval not in ["1d", "1wk", "1mo"]:
+            raise ValueError("Incorrect interval: valid intervals are 1d, 1wk, 1mo")
+
         data = requests.get(self.url, cookies={'B':self.cookie})
         content = StringIO(data.content.decode("utf-8"))
         return pd.read_csv(content, sep=',')
