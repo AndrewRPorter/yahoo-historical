@@ -20,14 +20,13 @@ Usage
 
     optional arguments:
         end             End day in form [Year,Month,Day]
-        interval        Interval for EOD prices, valid intervals: 1d, 1wk, 1mo
 
 Usage Examples:
 
 .. code::
 
     >>>from yahoo_historical import Fetcher
-    >>>data = Fetcher("AAPL", [2007,1,1], [2017,1,1], interval="1d")
+    >>>data = Fetcher("AAPL", [2007,1,1], [2017,1,1])
     >>>print(data.getHistorical())
 
                 Date        Open        High         Low       Close   Adj Close      Volume
