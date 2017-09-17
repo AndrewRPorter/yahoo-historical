@@ -10,16 +10,14 @@ except ImportError:
 
 class Fetcher:
     api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=history&crumb=%s"
-    def __init__(self, ticker, start, *args):
+    def __init__(self, ticker, start, end=None, interval="1d"):
         """Initializes class variables and formats api_url string"""
         self.ticker = ticker.upper()
-        self.interval = "1d"
+        self.interval = interval
         self.cookie, self.crumb = self.init()
-
         self.start = int(time.mktime(dt.datetime(start[0],start[1],start[2]).timetuple()))
 
-        if args:
-            end = args[0]
+        if end is not None:
             self.end = int(time.mktime(dt.datetime(end[0],end[1],end[2]).timetuple()))
         else:
             self.end = int(time.time())
