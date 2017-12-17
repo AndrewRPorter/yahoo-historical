@@ -9,7 +9,7 @@ except ImportError:
     from StringIO import StringIO
 
 class Fetcher:
-    api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=history&crumb=%s"
+    api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=%s&crumb=%s"
     def __init__(self, ticker, start, end=None, interval="1d"):
         """Initializes class variables and formats api_url string"""
         self.ticker = ticker.upper()
@@ -21,8 +21,6 @@ class Fetcher:
             self.end = int(time.mktime(dt.datetime(end[0],end[1],end[2]).timetuple()))
         else:
             self.end = int(time.time())
-
-        self.url = self.api_url % (self.ticker, self.start, self.end, self.interval, self.crumb)
 
     def init(self):
         """Returns a tuple pair of cookie and crumb used in the request"""
@@ -39,14 +37,28 @@ class Fetcher:
                 crumb = crumb.replace(u'\\u002F', '/')
         return cookie, crumb  # return a tuple of crumb and cookie
 
-    def getHistorical(self):
+    def getData(self, events):
         """Returns a list of historical data from Yahoo Finance"""
         if self.interval not in ["1d", "1wk", "1mo"]:
             raise ValueError("Incorrect interval: valid intervals are 1d, 1wk, 1mo")
 
-        data = requests.get(self.url, cookies={'B':self.cookie})
+        url = self.api_url % (self.ticker, self.start, self.end, self.interval, events, self.crumb)
+
+        data = requests.get(url, cookies={'B':self.cookie})
         content = StringIO(data.content.decode("utf-8"))
         return pd.read_csv(content, sep=',')
+
+    def getHistorical(self, events='history'):
+        """Returns a list of historical price data from Yahoo Finance"""
+        return self.getData('history')
+
+    def getDividends(self):
+        """Returns a list of historical dividends data from Yahoo Finance"""
+        return self.getData('div')
+
+    def getSplits(self):
+        """Returns a list of historical splits data from Yahoo Finance"""
+        return self.getData('split')
 
     def getDatePrice(self):
         """Returns a DataFrame for Date and Price from getHistorical()"""
