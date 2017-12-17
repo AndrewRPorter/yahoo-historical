@@ -52,8 +52,8 @@ class Fetcher:
         """Returns a list of historical price data from Yahoo Finance"""
         return self.getData('history')
 
-    def getDividents(self):
-        """Returns a list of historical dividents data from Yahoo Finance"""
+    def getDividends(self):
+        """Returns a list of historical dividends data from Yahoo Finance"""
         return self.getData('div')
 
     def getSplits(self):
