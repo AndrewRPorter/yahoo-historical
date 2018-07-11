@@ -2,6 +2,8 @@
 yahoo-historical
 ================
 
+.. image:: http://pepy.tech/badge/yahoo-historical
+
 Installation
 ------------
 
