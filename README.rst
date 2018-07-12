@@ -1,9 +1,13 @@
+.. image:: https://badge.fury.io/py/yahoo-historical.svg
+    :target: https://badge.fury.io/py/yahoo-historical
+    :alt: PyPI version
+    
+.. image:: http://pepy.tech/badge/yahoo-historical
+    :target: http://pepy.tech/count/yahoo-historical
+    
 ================
 yahoo-historical
 ================
-
-.. image:: http://pepy.tech/badge/yahoo-historical
-    :target: http://pepy.tech/count/yahoo-historical
 
 Installation
 ------------
