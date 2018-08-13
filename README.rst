@@ -4,6 +4,7 @@
     
 .. image:: http://pepy.tech/badge/yahoo-historical
     :target: http://pepy.tech/count/yahoo-historical
+    :alt: Downloads
     
 ================
 yahoo-historical
