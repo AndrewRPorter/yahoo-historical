@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import re
 import time
+import calendar as cal
 try:
     from io import StringIO
 except ImportError:
@@ -15,10 +16,10 @@ class Fetcher:
         self.ticker = ticker.upper()
         self.interval = interval
         self.cookie, self.crumb = self.init()
-        self.start = int(time.mktime(dt.datetime(start[0],start[1],start[2]).timetuple()))
+        self.start = int(cal.timegm(dt.datetime(*start).timetuple()))
 
         if end is not None:
-            self.end = int(time.mktime(dt.datetime(end[0],end[1],end[2]).timetuple()))
+            self.end = int(cal.timegm(dt.datetime(*end).timetuple()))
         else:
             self.end = int(time.time())
 
