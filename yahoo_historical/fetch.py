@@ -13,7 +13,9 @@ except ImportError:
 
 
 class Fetcher:
-    api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=%s&crumb=%s"
+    api_url = (
+        "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=%s&crumb=%s"
+    )
 
     def __init__(self, ticker, start, end=None, interval="1d"):
         """Initializes class variables and formats api_url string"""
@@ -47,14 +49,7 @@ class Fetcher:
         if self.interval not in ["1d", "1wk", "1mo"]:
             raise ValueError("Incorrect interval: valid intervals are 1d, 1wk, 1mo")
 
-        url = self.api_url % (
-            self.ticker,
-            self.start,
-            self.end,
-            self.interval,
-            events,
-            self.crumb,
-        )
+        url = self.api_url % (self.ticker, self.start, self.end, self.interval, events, self.crumb)
 
         data = requests.get(url, cookies={"B": self.cookie})
         content = StringIO(data.content.decode("utf-8"))
@@ -74,8 +69,8 @@ class Fetcher:
 
     def getDatePrice(self):
         """Returns a DataFrame for Date and Price from getHistorical()"""
-        return self.getHistorical().iloc[:,[0,4]]
+        return self.getHistorical().iloc[:, [0, 4]]
 
     def getDateVolume(self):
         """Returns a DataFrame for Date and Volume from getHistorical()"""
-        return self.getHistorical().iloc[:,[0,6]]
+        return self.getHistorical().iloc[:, [0, 6]]

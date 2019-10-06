@@ -26,11 +26,13 @@ Usage
         ticker          The ticker symbol to download historical data for
         start           Start day in form [Year,Month,Day]
 
-    optional arguments:
+    optional arguments:README
         end             End day in form [Year,Month,Day]
         interval        Interval to fetch historical data (can be 1d, 1wk, 1mo, defaults to 1d)
 
-Usage Examples:
+
+Example Usage
+-------------
 
 .. code::
 
