@@ -34,12 +34,14 @@ Usage
 Example Usage
 -------------
 
+.. code-block:: python
+
+   from yahoo_historical import Fetcher
+   data = Fetcher("AAPL", [2007,1,1], [2017,1,1])
+   print(data.getHistorical())
+
 .. code::
-
-    >>>from yahoo_historical import Fetcher
-    >>>data = Fetcher("AAPL", [2007,1,1], [2017,1,1])
-    >>>print(data.getHistorical())
-
+   
                 Date        Open        High         Low       Close   Adj Close      Volume
     0     2007-01-03   12.327143   12.368571   11.700000   10.812462   11.971429   309579900
     1     2007-01-04   12.007143   12.278571   11.974286   11.052453   12.237143   211815100
