@@ -30,6 +30,14 @@ Usage
         end             End day in form [Year,Month,Day]
         interval        Interval to fetch historical data (can be 1d, 1wk, 1mo, defaults to 1d)
 
+Methods
+-------
+
+- get_historical()
+- get_dividends()
+- get_splits()
+- get_date_price()
+- get_date_volume()
 
 Example Usage
 -------------
