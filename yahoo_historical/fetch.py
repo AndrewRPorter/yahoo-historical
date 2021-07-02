@@ -15,14 +15,13 @@ except ImportError:
 
 class Fetcher:
     api_url = (
-        "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=%s&crumb=%s"
+        "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=%s"
     )
 
     def __init__(self, ticker, start, end=None, interval="1d"):
         """Initializes class variables and formats api_url string"""
         self.ticker = ticker.upper()
         self.interval = interval
-        self.cookie, self.crumb = self.init()
         self.start = int(cal.timegm(dt.datetime(*start).timetuple()))
 
         if end is not None:
@@ -30,28 +29,14 @@ class Fetcher:
         else:
             self.end = int(time.time())
 
-    def init(self):
-        """Returns a tuple pair of cookie and crumb used in the request"""
-        url = "https://finance.yahoo.com/quote/%s/history" % (self.ticker)
-        r = requests.get(url)
-        txt = r.content
-        cookie = r.cookies["B"]
-        pattern = re.compile('.*"CrumbStore":\{"crumb":"(?P<crumb>[^"]+)"\}')
-
-        for line in txt.splitlines():
-            m = pattern.match(line.decode("utf-8"))
-            if m is not None:
-                crumb = m.groupdict()["crumb"]
-                crumb = crumb.replace(u"\\u002F", "/")
-        return cookie, crumb  # return a tuple of crumb and cookie
 
     def _get(self, events):
         if self.interval not in ["1d", "1wk", "1mo"]:
             raise ValueError("Incorrect interval: valid intervals are 1d, 1wk, 1mo")
 
-        url = self.api_url % (self.ticker, self.start, self.end, self.interval, events, self.crumb)
+        url = self.api_url % (self.ticker, self.start, self.end, self.interval, events)
 
-        data = requests.get(url, cookies={"B": self.cookie})
+        data = requests.get(url, headers={'User-agent': 'Mozilla/5.0'})
         content = StringIO(data.content.decode("utf-8"))
         return pd.read_csv(content, sep=",")
 
@@ -85,9 +70,9 @@ class Fetcher:
         warnings.warn("getDateVolume has been deprecated, use get_date_volume instead", DeprecationWarning)
         return self.getHistorical().iloc[:, [0, 6]]
 
-    def get_historical(self):
+    def get_historical(self, includeAdjustedClose="true"):
         """PEP8 friendly version of deprecated getHistorical function"""
-        return self._get("history")
+        return self._get("history&includeAdjustedClose=" + includeAdjustedClose)
 
     def get_dividends(self):
         """PEP8 friendly version of deprecated getDividends function"""
