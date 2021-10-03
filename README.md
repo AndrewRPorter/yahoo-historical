@@ -1,37 +1,12 @@
-.. image:: https://badge.fury.io/py/yahoo-historical.svg
-    :target: https://badge.fury.io/py/yahoo-historical
-    :alt: PyPI version
-    
-.. image:: http://pepy.tech/badge/yahoo-historical
-    :target: http://pepy.tech/count/yahoo-historical
-    :alt: Downloads
-    
-================
-yahoo-historical
-================
+# yahoo-historical
 
-Installation
-------------
+## Installation
 
-.. code::
+```
+pip install --user yahoo-historical
+```
 
-    python -m pip install yahoo-historical
-
-Usage
------
-
-.. code::
-
-    arguments:
-        ticker          The ticker symbol to download historical data for
-        start           Start day in form [Year,Month,Day]
-
-    optional arguments:
-        end             End day in form [Year,Month,Day]
-        interval        Interval to fetch historical data (can be 1d, 1wk, 1mo, defaults to 1d)
-
-Methods
--------
+## Methods
 
 - get_historical()
 - get_dividends()
@@ -39,17 +14,27 @@ Methods
 - get_date_price()
 - get_date_volume()
 
-Example Usage
--------------
+## Example Usage
 
-.. code-block:: python
+Below details the available method params for creating a Fetcher object.
 
-   from yahoo_historical import Fetcher
+### Arguments
+
+- ticker: The ticker symbol to download historical data for
+- start: Start date in form [Year,Month,Day]
+
+### Optional Arguments
+
+- end: End date in form [Year,Month,Day]
+- interval: Interval to fetch historical data (can be 1d, 1wk, 1mo, defaults to 1d)
+
+```python
+from yahoo_historical import Fetcher
    data = Fetcher("AAPL", [2007,1,1], [2017,1,1])
    print(data.get_historical())
+```
 
-.. code::
-   
+```
                 Date        Open        High         Low       Close   Adj Close      Volume
     0     2007-01-03   12.327143   12.368571   11.700000   10.812462   11.971429   309579900
     1     2007-01-04   12.007143   12.278571   11.974286   11.052453   12.237143   211815100
@@ -62,16 +47,9 @@ Example Usage
     8     2007-01-16   13.668571   13.892858   13.635715   12.528520   13.871428   311019100
     9     2007-01-17   13.937143   13.942857   13.545714   12.251113   13.564285   411565000
     10    2007-01-18   13.157143   13.158571   12.721429   11.492435   12.724286   591151400
+```
 
-Motivation
-----------
-
-After struggling to download Yahoo Finance historical data since they closed
-the ichart API, I decided to combine a few open source scripts into a
-class that can do it all!
-
-License
--------
+## License
 
 MIT License
 
