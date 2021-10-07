@@ -1,3 +1,5 @@
+[![yahoo-historical build status](https://circleci.com/gh/AndrewRPorter/yahoo-historical.svg?style=svg)](LINK)
+
 # yahoo-historical
 
 ## Installation
