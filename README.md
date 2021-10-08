@@ -1,4 +1,4 @@
-[![yahoo-historical build status](https://circleci.com/gh/AndrewRPorter/yahoo-historical.svg?style=svg)](https://app.circleci.com/pipelines/github/AndrewRPorter/yahoo-historical)
+[![PyPi version](https://badge.fury.io/py/yahoo-historical.svg)](https://badge.fury.io/py/yahoo-historical) [![Total downloads via Pip](https://pepy.tech/badge/yahoo-historical)](https://pepy.tech/count/yahoo-historical) [![yahoo-historical build status](https://circleci.com/gh/AndrewRPorter/yahoo-historical.svg?style=svg)](https://app.circleci.com/pipelines/github/AndrewRPorter/yahoo-historical)
 
 # yahoo-historical
 
