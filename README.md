@@ -23,16 +23,22 @@ Below details the available method params for creating a Fetcher object.
 ### Arguments
 
 - ticker: The ticker symbol to download historical data for
-- start: Start date in form [Year,Month,Day]
+- start: Start date as Unix timestamp
 
 ### Optional Arguments
 
-- end: End date in form [Year,Month,Day]
+- end: End date as Unix timestamp
 - interval: Interval to fetch historical data (can be 1d, 1wk, 1mo, defaults to 1d)
 
 ```python
 from yahoo_historical import Fetcher
-data = Fetcher("AAPL", [2007,1,1], [2017,1,1])
+import datetime
+import time
+
+# create unix timestamp representing January 1st, 2007
+timestamp = time.mktime(datetime.datetime(2007, 1, 1).timetuple())
+
+data = Fetcher("AAPL", timestamp)
 print(data.get_historical())
 ```
 
@@ -48,6 +54,13 @@ Note that you can return a dictionary instead of a DataFrame by setting the `as_
 
 ```python
 from yahoo_historical import Fetcher
-data = Fetcher("AAPL", [2007,1,1], [2017,1,1])
+
+import datetime
+import time
+
+# create unix timestamp representing January 1st, 2007
+timestamp = time.mktime(datetime.datetime(2007, 1, 1).timetuple())
+
+data = Fetcher("AAPL", timestamp)
 print(data.get_historical(as_dataframe=False))
 ```

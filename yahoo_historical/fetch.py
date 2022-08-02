@@ -1,5 +1,3 @@
-import calendar as cal
-import datetime as dt
 import time
 import pandas as pd
 import requests
@@ -8,27 +6,32 @@ from .constants import API_URL, DATE_INTERVALS, ONE_DAY_INTERVAL
 
 
 class Fetcher:
-    def __init__(self, ticker, start, end=None, interval=ONE_DAY_INTERVAL):
-        """Initializes class variables and formats api_url string"""
+    def __init__(self, ticker: str, start, end=time.time(), interval=ONE_DAY_INTERVAL):
         self.ticker = ticker.upper()
         self.interval = interval
-        self.start = int(cal.timegm(dt.datetime(*start).timetuple()))
 
-        if end is not None:
-            self.end = int(cal.timegm(dt.datetime(*end).timetuple()))
-        else:
-            self.end = int(time.time())
+        # we convert the unix timestamps to int here to avoid sending floats to yahoo finance API
+        self.start = int(start)
+        self.end = int(end)
 
-    def create_url(self, events):
-        return API_URL % (self.ticker, self.start, self.end, self.interval, events)
+    def create_url(self, event: str) -> str:
+        """Generate a URL for a particular event.
 
-    def _get(self, events, as_dataframe=True):
+        Args:
+            event (str): event type to query for ('history', 'div', 'split')
+
+        Returns:
+            str: formatted URL for an API call
+        """
+        return API_URL % (self.ticker, self.start, self.end, self.interval, event)
+
+    def _get(self, event, as_dataframe=True):
         if self.interval not in DATE_INTERVALS:
             raise ValueError(
                 f"Incorrect interval: valid intervals are {', '.join(DATE_INTERVALS)}"
             )
 
-        url = self.create_url(events)
+        url = self.create_url(event)
         data = requests.get(url, headers={"User-agent": ""})
         content = StringIO(data.content.decode("utf-8"))
 
