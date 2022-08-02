@@ -4,14 +4,14 @@ TEST_TICKER = "AAPL"
 
 
 def test_get_no_dataframe():
-    data = Fetcher("AAPL", [2007, 1, 1], [2017, 1, 1]).get_historical(
+    data = Fetcher(TEST_TICKER, [2007, 1, 1], [2017, 1, 1]).get_historical(
         as_dataframe=False
     )
     assert len(data) > 0
 
 
 def test_get_with_lowercase():
-    data = Fetcher("aapl", [2007, 1, 1], [2017, 1, 1]).get_historical()
+    data = Fetcher(TEST_TICKER.lower(), [2007, 1, 1], [2017, 1, 1]).get_historical()
     assert len(data) > 0
 
 
