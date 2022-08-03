@@ -30,13 +30,3 @@ def test_get_dividends():
 def test_get_splits():
     data = Fetcher(TEST_TICKER, TIME_START, TIME_END).get_splits()
     assert len(data) > 0
-
-
-def test_get_date_price():
-    data = Fetcher(TEST_TICKER, TIME_START, TIME_END).get_date_price()
-    assert len(data) > 0
-
-
-def test_get_date_volume():
-    data = Fetcher(TEST_TICKER, TIME_START, TIME_END).get_date_volume()
-    assert len(data) > 0

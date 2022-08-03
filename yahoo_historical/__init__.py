@@ -1,1 +1,1 @@
-from .fetch import Fetcher
+from .fetch import Fetcher  # noqa

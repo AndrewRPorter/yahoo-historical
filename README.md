@@ -13,8 +13,6 @@ pip install --user yahoo-historical
 - get_historical()
 - get_dividends()
 - get_splits()
-- get_date_price()
-- get_date_volume()
 
 ## Example Usage
 
@@ -27,7 +25,7 @@ Below details the available method params for creating a Fetcher object.
 
 ### Optional Arguments
 
-- end: End date as Unix timestamp
+- end: End date as Unix timestamp (defaults to `time.time()`)
 - interval: Interval to fetch historical data (can be 1d, 1wk, 1mo, defaults to 1d)
 
 ```python
