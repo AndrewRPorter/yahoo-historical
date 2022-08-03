@@ -1,103 +1,75 @@
-import calendar as cal
-import datetime as dt
+from typing import Union
 import time
-import warnings
-
 import pandas as pd
 import requests
-
-try:
-    from io import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import StringIO
+from .constants import API_URL, DATE_INTERVALS, ONE_DAY_INTERVAL
 
 
 class Fetcher:
-    api_url = "https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%s&period2=%s&interval=%s&events=%s"
-
-    def __init__(self, ticker, start, end=None, interval="1d"):
-        """Initializes class variables and formats api_url string"""
+    def __init__(
+        self,
+        ticker: str,
+        start: Union[int, float],
+        end: Union[int, float] = time.time(),
+        interval: str = ONE_DAY_INTERVAL,
+    ):
         self.ticker = ticker.upper()
         self.interval = interval
-        self.start = int(cal.timegm(dt.datetime(*start).timetuple()))
 
-        if end is not None:
-            self.end = int(cal.timegm(dt.datetime(*end).timetuple()))
-        else:
-            self.end = int(time.time())
+        # we convert the unix timestamps to int here to avoid sending floats to yahoo finance API
+        # as the API will reject the call for an invalid type
+        self.start = int(start)
+        self.end = int(end)
 
-    def _get(self, events):
-        if self.interval not in ["1d", "1wk", "1mo"]:
-            raise ValueError("Incorrect interval: valid intervals are 1d, 1wk, 1mo")
+    def create_url(self, event: str) -> str:
+        """Generate a URL for a particular event.
 
-        url = self.api_url % (self.ticker, self.start, self.end, self.interval, events)
+        Args:
+            event (str): event type to query for ('history', 'div', 'split')
 
+        Returns:
+            str: formatted URL for an API call
+        """
+        return API_URL % (self.ticker, self.start, self.end, self.interval, event)
+
+    def _get(self, event: str, as_dataframe=True) -> Union[pd.DataFrame, dict]:
+        """Private helper function to build URL and make API request to grab data
+
+        Args:
+            event (str): kind of data we want to query (history, div, split)
+            as_dataframe (bool, optional): whether or not to return data as a pandas DataFrame. Defaults to True.
+
+        Raises:
+            ValueError: if invalid interval is supplied
+
+        Returns:
+            Union[pd.DataFrame, dict]: data from yahoo finance API call
+        """
+        if self.interval not in DATE_INTERVALS:
+            raise ValueError(
+                f"Incorrect interval: valid intervals are {', '.join(DATE_INTERVALS)}"
+            )
+
+        url = self.create_url(event)
+        # yahoo finance rejects our API request without an empty user agent
         data = requests.get(url, headers={"User-agent": ""})
         content = StringIO(data.content.decode("utf-8"))
-        return pd.read_csv(content, sep=",")
 
-    def getData(self, events):
-        """Returns a list of historical data from Yahoo Finance"""
-        warnings.warn(
-            "getData has been deprecated, use get_data instead", DeprecationWarning
-        )
-        return self._get(events)
+        dataframe = pd.read_csv(content, sep=",")
+        if as_dataframe:
+            return dataframe
 
-    def getHistorical(self):
+        return dataframe.to_json()
+
+    def get_historical(self, as_dataframe=True):
         """Returns a list of historical price data from Yahoo Finance"""
-        warnings.warn(
-            "getHistorical has been deprecated, use get_historical instead",
-            DeprecationWarning,
-        )
-        return self._get("history")
+        return self._get("history", as_dataframe=as_dataframe)
 
-    def getDividends(self):
+    def get_dividends(self, as_dataframe=True):
         """Returns a list of historical dividends data from Yahoo Finance"""
-        warnings.warn(
-            "getDividends has been deprecated, use get_dividends instead",
-            DeprecationWarning,
-        )
-        return self._get("div")
+        return self._get("div", as_dataframe=as_dataframe)
 
-    def getSplits(self):
-        """Returns a list of historical splits data from Yahoo Finance"""
-        warnings.warn(
-            "getSplits has been deprecated, use get_splits instead", DeprecationWarning
-        )
-        return self._get("split")
-
-    def getDatePrice(self):
-        """Returns a DataFrame for Date and Price from getHistorical()"""
-        warnings.warn(
-            "getDatePrice has been deprecated, use get_date_price instead",
-            DeprecationWarning,
-        )
-        return self.getHistorical().iloc[:, [0, 4]]
-
-    def getDateVolume(self):
-        """Returns a DataFrame for Date and Volume from getHistorical()"""
-        warnings.warn(
-            "getDateVolume has been deprecated, use get_date_volume instead",
-            DeprecationWarning,
-        )
-        return self.getHistorical().iloc[:, [0, 6]]
-
-    def get_historical(self):
-        """PEP8 friendly version of deprecated getHistorical function"""
-        return self._get("history")
-
-    def get_dividends(self):
-        """PEP8 friendly version of deprecated getDividends function"""
-        return self._get("div")
-
-    def get_splits(self):
-        """PEP8 friendly version of deprecated getSplits function"""
-        return self._get("split")
-
-    def get_date_price(self):
-        """PEP8 friendly version of deprecated getDatePrice function"""
-        return self.get_historical().iloc[:, [0, 4]]
-
-    def get_date_volume(self):
-        """PEP8 friendly version of deprecated getDateVolume function"""
-        return self.get_historical().iloc[:, [0, 6]]
+    def get_splits(self, as_dataframe=True):
+        """Returns a list of historical stock splits from Yahoo Finance"""
+        return self._get("split", as_dataframe=as_dataframe)
