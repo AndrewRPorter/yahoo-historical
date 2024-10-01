@@ -1,10 +1,48 @@
 from typing import Union
 import time
+import calendar as cal
+import datetime as dt
 import pandas as pd
 import requests
 from io import StringIO
 from .constants import API_URL, DATE_INTERVALS, ONE_DAY_INTERVAL
 
+def conv_df(resp):
+    j = resp.json()
+    
+    # Extract the data explicitly by field name
+    timestamps = j['chart']['result'][0]['timestamp']
+    indicators = j['chart']['result'][0]['indicators']['quote'][0]
+    adj = j['chart']['result'][0]['indicators']['adjclose'][0]
+    
+    # Explicitly extract each field by its key to avoid any mismatch
+    close = indicators.get('close', [])
+    open_ = indicators.get('open', [])
+    high = indicators.get('high', [])
+    low = indicators.get('low', [])
+    adjclose = adj.get('adjclose', [])
+    volume = indicators.get('volume', [])
+
+    # Create the DataFrame with the correct order of columns
+    df = pd.DataFrame({
+        'timestamp': timestamps,
+        'Open': open_,
+        'High': high,
+        'Low': low,
+        'Close': close,
+        'Adj Close': adjclose,
+        'Volume': volume
+    })
+    
+    # Add datetime columns
+    df['time'] = pd.to_datetime(df['timestamp'], unit='s')
+    df['Date'] = df['time'].apply(lambda x: x.strftime('%Y-%m-%d'))
+    del df['time']
+    del df['timestamp']
+    cols = df.columns.tolist()
+    cols = cols[-1:] + cols[:-1]
+    df = df[cols]
+    return df
 
 class Fetcher:
     def __init__(
@@ -52,11 +90,10 @@ class Fetcher:
             )
 
         url = self.create_url(event)
-        # yahoo finance rejects our API request without an empty user agent
-        data = requests.get(url, headers={"User-agent": ""})
-        content = StringIO(data.content.decode("utf-8"))
 
-        dataframe = pd.read_csv(content, sep=",")
+        data = requests.get(url, headers={"User-agent": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)"})
+
+        dataframe = conv_df(data)
         if as_dataframe:
             return dataframe
 
