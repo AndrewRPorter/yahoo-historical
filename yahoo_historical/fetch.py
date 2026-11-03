@@ -53,7 +53,7 @@ class Fetcher:
 
         url = self.create_url(event)
         # yahoo finance rejects our API request without an empty user agent
-        data = requests.get(url, headers={"User-agent": ""})
+        data = requests.get(url, headers={"User-agent": ""}, timeout=30)
         content = StringIO(data.content.decode("utf-8"))
 
         dataframe = pd.read_csv(content, sep=",")
